@@ -1,0 +1,38 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Dockerfile.jenkins — Custom Jenkins with Blue Ocean + Docker CLI
+# Build : docker build -f Dockerfile.jenkins -t myjenkins-blueocean:lts .
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Use the latest LTS Jenkins (2.479.3+) with JDK 21 — required by BlueOcean plugins
+FROM jenkins/jenkins:lts-jdk21
+
+# Switch to root to install system packages
+USER root
+
+# Install Docker CLI (so Jenkins can run docker commands in pipelines)
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg | \
+        gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) \
+        signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+        https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
+        > /etc/apt/sources.list.d/docker.list && \
+    apt-get update && apt-get install -y docker-ce-cli && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Switch back to the jenkins user
+USER jenkins
+
+# Pre-install Blue Ocean and pipeline plugins
+# These versions are compatible with Jenkins LTS (2.479.3+)
+RUN jenkins-plugin-cli --plugins \
+    blueocean \
+    docker-workflow \
+    git \
+    workflow-aggregator \
+    credentials-binding \
+    pipeline-stage-view

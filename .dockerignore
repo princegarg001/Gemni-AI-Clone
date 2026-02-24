@@ -1,0 +1,20 @@
+# Git internals
+.git
+.gitignore
+
+# Editor / IDE files
+.vscode
+.idea
+*.code-workspace
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Docker files themselves (no need to copy into image)
+Dockerfile
+.dockerignore
+nginx.conf
+
+# Readme / docs
+README.md
