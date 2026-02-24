@@ -39,7 +39,7 @@ pipeline {
 
     post {
         success {
-            echo '✅ Pipeline SUCCESS — Gemini Clone is live at http://localhost:8080'
+            echo '✅ Pipeline SUCCESS — Gemini Clone is live at http://localhost:8090'
         }
         failure {
             echo '❌ Pipeline FAILED — Check logs above for details'
