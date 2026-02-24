@@ -23,8 +23,14 @@ pipeline {
                 sh '''
                 echo "Waiting for container to be ready..."
                 sleep 5
-                curl -f http://localhost:8090 || (echo "Health check FAILED" && exit 1)
-                echo "Health check PASSED - App is running on port 8090"
+
+                # Get the container's internal Docker IP
+                CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' gemni)
+                echo "Container IP: $CONTAINER_IP"
+
+                # Curl the container directly on port 80 (internal)
+                curl -f http://$CONTAINER_IP:80 || (echo "Health check FAILED" && exit 1)
+                echo "Health check PASSED - App is running!"
                 '''
             }
         }
