@@ -3,14 +3,6 @@ pipeline {
 
     stages {
 
-        stage('Clone') {
-            steps {
-                git credentialsId: 'github-creds',
-                    url: 'https://github.com/prince-1234567890/Gemni-Clone.git',
-                    branch: 'main'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t gemni-clone .'
