@@ -5,7 +5,10 @@ This PR adds a **configuration-driven custom fields system** to the Sample Entry
 ### Backend (5-layer architecture)
 - **Database**: Liquibase migration creates `custom_field` and `custom_field_value` tables
 - **Entities**: [CustomField](cci:2://file:///c:/Users/princ/OneDrive/Desktop/OpenELIS-Global-2/src/main/java/org/openelisglobal/customfield/valueholder/CustomField.java:13:0-122:1), [CustomFieldValue](cci:2://file:///c:/Users/princ/OneDrive/Desktop/OpenELIS-Global-2/src/main/java/org/openelisglobal/customfield/valueholder/CustomFieldValue.java:14:0-68:1), `CustomFieldType` enum (extends [BaseObject](cci:2://file:///c:/Users/princ/OneDrive/Desktop/OpenELIS-Global-2/src/main/java/org/openelisglobal/common/valueholder/BaseObject.java:28:0-220:1))
-- **DAO/Service**: `CustomFieldDAO/Impl`, `CustomFieldValueDAO/Impl`, `CustomFieldService/Impl`, `CustomFieldValueService/Impl`
+- **DAO/Service**: `CustomFieldDAO/Impl`, 
+<img width="1882" height="887" alt="Screenshot 2026-02-26 165723" src="https://github.com/user-attachments/assets/557136c3-bc20-493b-b95d-c67e4b9301e0" />
+<img width="1847" height="714" alt="Screenshot 2026-02-26 165342" src="https://github.com/user-attachments/assets/bde4934a-443c-4f79-8079-881223b76ec9" />
+`CustomFieldValueDAO/Impl`, `CustomFieldService/Impl`, `CustomFieldValueService/Impl`
 - **REST API**: [CustomFieldRestController](cci:2://file:///c:/Users/princ/OneDrive/Desktop/OpenELIS-Global-2/src/main/java/org/openelisglobal/customfield/controller/rest/CustomFieldRestController.java:18:0-66:1) at `/rest/custom-fields` (GET, POST, PUT, deactivate)
 - **DTO**: [CustomFieldValueDTO](cci:2://file:///c:/Users/princ/OneDrive/Desktop/OpenELIS-Global-2/src/main/java/org/openelisglobal/customfield/dto/CustomFieldValueDTO.java:2:0-30:1) for API data transfer
 
@@ -14,53 +17,7 @@ This PR adds a **configuration-driven custom fields system** to the Sample Entry
 - Supports 6 field types: STRING, INTEGER, DECIMAL, BOOLEAN, DATE, CHOICE
 - Integrated into Add Order wizard on Sample page
 - i18n support for English and French
-
-## Architecture
-
-```mermaid
-flowchart TB
-    subgraph Frontend["Frontend (React + Carbon Design System)"]
-        UI["Add Order → Sample Page"]
-        CF["CustomFields.js Component"]
-        IV["OrderEntryFormValues.js"]
-        UI --> CF
-        CF --> IV
-    end
-
-    subgraph API["REST API"]
-        RC["CustomFieldRestController<br/>/rest/custom-fields"]
-    end
-
-    subgraph Service["Service Layer"]
-        CFS["CustomFieldServiceImpl"]
-        CFVS["CustomFieldValueServiceImpl"]
-    end
-
-    subgraph DAO["Data Access Layer"]
-        CFD["CustomFieldDAOImpl"]
-        CFVD["CustomFieldValueDAOImpl"]
-    end
-
-    subgraph Database["PostgreSQL Database"]
-        T1["custom_field<br/>id | name | field_type | options<br/>sort_order | is_required | is_active"]
-        T2["custom_field_value<br/>id | custom_field_id | sample_id<br/>field_value"]
-        T1 -.->|"FK"| T2
-    end
-
-    CF -->|"GET /rest/custom-fields"| RC
-    RC --> CFS
-    RC --> CFVS
-    CFS --> CFD
-    CFVS --> CFVD
-    CFD --> T1
-    CFVD --> T2
-
-    style Frontend fill:#1062FE,color:#fff
-    style API fill:#198038,color:#fff
-    style Service fill:#A56EFF,color:#fff
-    style DAO fill:#F1C21B,color:#000
-    style Database fill:#DA1E28,color:#fff
-```
+- 
 ## Architecture
 
 ```mermaid
@@ -70,3 +27,29 @@ flowchart LR
     C --> D["💾 DAO Layer"]
     D --> E["🗄️ PostgreSQL<br/>custom_field<br/>custom_field_value"]
 ```
+
+
+## Screenshots
+
+<img width="1882" height="887" alt="Screenshot 2026-02-26 165723" src="https://github.com/user-attachments/assets/6271758a-95b4-4
+<img width="1858" height="677" alt="Screenshot 2026-02-26 174110" src="https://github.com/user-attachments/assets/bddb1e8a-a123-4a69-ac2a-ce1144b59eed" />
+583-a6ea-f2833ada9711" />
+
+
+
+## Demo Video
+
+https://github.com/user-attachments/assets/652a3448-f662-461f-ac11-f3e186c69f08
+
+
+## Related Issue
+
+
+Resolves #2878
+
+## Other
+
+- All backend classes follow existing project patterns ([BaseObject](cci:2://file:///c:/Users/princ/OneDrive/Desktop/OpenELIS-Global-2/src/main/java/org/openelisglobal/common/valueholder/BaseObject.java:28:0-220:1), [BaseDAOImpl](cci:2://file:///c:/Users/princ/OneDrive/Desktop/OpenELIS-Global-2/src/main/java/org/openelisglobal/common/daoimpl/BaseDAOImpl.java:53:0-988:1), [BaseObjectServiceImpl](cci:2://file:///c:/Users/princ/OneDrive/Desktop/OpenELIS-Global-2/src/main/java/org/openelisglobal/common/service/BaseObjectServiceImpl.java:19:0-344:1))
+- Backward-compatible — if no custom fields are defined, the section does not render
+- Soft-delete support via deactivation to preserve data integrity
+- No existing functionality was altered — only new files and minimal integration points
