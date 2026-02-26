@@ -61,3 +61,12 @@ flowchart TB
     style DAO fill:#F1C21B,color:#000
     style Database fill:#DA1E28,color:#fff
 ```
+## Architecture
+
+```mermaid
+flowchart LR
+    A["🖥️ React UI<br/>CustomFields.js"] -->|"GET /rest/custom-fields"| B["🔌 REST Controller"]
+    B --> C["⚙️ Service Layer"]
+    C --> D["💾 DAO Layer"]
+    D --> E["🗄️ PostgreSQL<br/>custom_field<br/>custom_field_value"]
+```
