@@ -14,3 +14,50 @@ This PR adds a **configuration-driven custom fields system** to the Sample Entry
 - Supports 6 field types: STRING, INTEGER, DECIMAL, BOOLEAN, DATE, CHOICE
 - Integrated into Add Order wizard on Sample page
 - i18n support for English and French
+
+## Architecture
+
+```mermaid
+flowchart TB
+    subgraph Frontend["Frontend (React + Carbon Design System)"]
+        UI["Add Order → Sample Page"]
+        CF["CustomFields.js Component"]
+        IV["OrderEntryFormValues.js"]
+        UI --> CF
+        CF --> IV
+    end
+
+    subgraph API["REST API"]
+        RC["CustomFieldRestController<br/>/rest/custom-fields"]
+    end
+
+    subgraph Service["Service Layer"]
+        CFS["CustomFieldServiceImpl"]
+        CFVS["CustomFieldValueServiceImpl"]
+    end
+
+    subgraph DAO["Data Access Layer"]
+        CFD["CustomFieldDAOImpl"]
+        CFVD["CustomFieldValueDAOImpl"]
+    end
+
+    subgraph Database["PostgreSQL Database"]
+        T1["custom_field<br/>id | name | field_type | options<br/>sort_order | is_required | is_active"]
+        T2["custom_field_value<br/>id | custom_field_id | sample_id<br/>field_value"]
+        T1 -.->|"FK"| T2
+    end
+
+    CF -->|"GET /rest/custom-fields"| RC
+    RC --> CFS
+    RC --> CFVS
+    CFS --> CFD
+    CFVS --> CFVD
+    CFD --> T1
+    CFVD --> T2
+
+    style Frontend fill:#1062FE,color:#fff
+    style API fill:#198038,color:#fff
+    style Service fill:#A56EFF,color:#fff
+    style DAO fill:#F1C21B,color:#000
+    style Database fill:#DA1E28,color:#fff
+```
